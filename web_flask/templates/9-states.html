@@ -14,6 +14,14 @@
         <li>{{ state.id }}: <b>{{ state.name }}</b></li>
         {% endfor %}
     </ul>
+    {% elif case == 2 %}
+    <h1>State: {{ state.name }}</h1>
+    <h3>Cities:</h3>
+    <ul>
+        {% for city in cities %}
+        <li>{{ city.id }}: <b>{{ city.name }}</b></li>
+        {% endfor %}
+    </ul>
     {% else %}
     <h1>Not found!</h1>
     {% endif %}
