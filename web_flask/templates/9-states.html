@@ -7,13 +7,7 @@
     <title>States & State - AirBnB Clone</title>
 </head>
 <body>
-    {% if case == 1 %}
-    <h1>States</h1>
-    <ul>
-        {% for state in states %}
-        <li>{{ state.id }}: <b>{{ state.name }}</b></li>
-        {% endfor %}
-    </ul>
+    {% if state %}
     {% elif case == 2 %}
     <h1>State: {{ state.name }}</h1>
     <h3>Cities:</h3>
