@@ -1,49 +1,50 @@
 #!/usr/bin/python3
-"""This script starts a Flask web application"""
-import sys
+'''A simple Flask web application.
+'''
 from flask import Flask, render_template
 
-sys.path.append('..')
+from models import storage
+from models.state import State
+
 
 app = Flask(__name__)
+'''The Flask application instance.'''
 app.url_map.strict_slashes = False
 
 
 @app.route('/states')
-def states():
-    """
-    states list of available states
-    """
-    from models.state import State
-    from models import storage
-    states = list(storage.all(State).values())
-    states.sort(key=lambda state: state.name)
-    return render_template('7-states_list.html', states=states)
-
-
 @app.route('/states/<id>')
-def get_state(id):
-    """
-    get_state displays a state and its cities
-
-    :param id(str): is the id of the state to be desplayed
-    """
-    from models.state import State
-    from models import storage
-    state = storage.all(State).get("State.{}".format(id), None)
-    if state is not None:
-        state.cities.sort(key=lambda city: city.name)
-    return render_template('9-states.html', state=state)
+def states(id=None):
+    '''The states page.'''
+    states = None
+    state = None
+    all_states = list(storage.all(State).values())
+    case = 404
+    if id is not None:
+        res = list(filter(lambda x: x.id == id, all_states))
+        if len(res) > 0:
+            state = res[0]
+            state.cities.sort(key=lambda x: x.name)
+            case = 2
+    else:
+        states = all_states
+        for state in states:
+            state.cities.sort(key=lambda x: x.name)
+        states.sort(key=lambda x: x.name)
+        case = 1
+    ctxt = {
+        'states': states,
+        'state': state,
+        'case': case
+    }
+    return render_template('9-states.html', **ctxt)
 
 
 @app.teardown_appcontext
-def reload_db(exception):
-    """
-    reload_db reloads the current sesson after each request
-    """
-    from models import storage
+def flask_teardown(exc):
+    '''The Flask app/request context end event listener.'''
     storage.close()
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0', port='5000')
